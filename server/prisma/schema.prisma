@@ -1,0 +1,157 @@
+// Time2Rate researcher backend — data model.
+// SQLite for zero-setup local dev; enums are stored as validated strings,
+// JSON-ish lists as stringified JSON. Swap datasource to PostgreSQL for prod.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         String   @default("Ricercatore")
+  createdAt    DateTime @default(now())
+
+  studies Study[]
+}
+
+model Study {
+  id          String    @id @default(cuid())
+  title       String
+  description String    @default("")
+  status      String    @default("bozza") // bozza | attivo | completato
+  code        String    @unique
+  piName      String
+  startDate   DateTime?
+  endDate     DateTime?
+  ownerId     String
+  owner       User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+
+  groups        StudyGroup[]
+  schedules     ScheduleRule[]
+  notifications Notification[]
+  consent       ConsentDocument[]
+  instructions  InstructionDocument[]
+  participants  Participant[]
+  invitations   Invitation[]
+}
+
+model StudyGroup {
+  id      String @id @default(cuid())
+  studyId String
+  study   Study  @relation(fields: [studyId], references: [id], onDelete: Cascade)
+  name    String
+
+  participants Participant[]
+  schedules    ScheduleRule[]
+}
+
+model ScheduleRule {
+  id            String  @id @default(cuid())
+  studyId       String
+  study         Study   @relation(fields: [studyId], references: [id], onDelete: Cascade)
+  groupId       String
+  group         StudyGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  type          String  // time-contingent | event-contingent
+  mode          String  // numero-giorni | date-specifiche
+  numberOfDays  Int?
+  specificDates String? // JSON array of ISO dates
+  promptsPerDay Int?
+
+  windows      SamplingWindow[]
+  promptEvents PromptEvent[]
+}
+
+model SamplingWindow {
+  id             String       @id @default(cuid())
+  scheduleRuleId String
+  scheduleRule   ScheduleRule @relation(fields: [scheduleRuleId], references: [id], onDelete: Cascade)
+  label          String       @default("Finestra di campionamento")
+  startTime      String       // "10:00"
+  endTime        String       // "11:00"
+}
+
+model Notification {
+  id         String @id @default(cuid())
+  studyId    String
+  study      Study  @relation(fields: [studyId], references: [id], onDelete: Cascade)
+  title      String
+  body       String @default("")
+  recipients String @default("Tutti")
+  trigger    String @default("Inizio finestra")
+}
+
+model ConsentDocument {
+  id       String  @id @default(cuid())
+  studyId  String
+  study    Study   @relation(fields: [studyId], references: [id], onDelete: Cascade)
+  title    String
+  type     String  @default("Consenso informato")
+  fileName String?
+}
+
+model InstructionDocument {
+  id       String  @id @default(cuid())
+  studyId  String
+  study    Study   @relation(fields: [studyId], references: [id], onDelete: Cascade)
+  title    String
+  fileName String?
+}
+
+model Participant {
+  id            String    @id @default(cuid())
+  studyId       String
+  study         Study     @relation(fields: [studyId], references: [id], onDelete: Cascade)
+  groupId       String
+  group         StudyGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  name          String
+  email         String
+  compliance    String    @default("inattivo") // alta | media | bassa | inattivo
+  compliancePct Int       @default(0)
+  lastResponse  DateTime?
+  status        String    @default("invitato") // attivo | invitato | rimosso
+  isTester      Boolean   @default(false)
+
+  promptEvents PromptEvent[]
+  responses    Response[]
+}
+
+model Invitation {
+  id      String   @id @default(cuid())
+  studyId String
+  study   Study    @relation(fields: [studyId], references: [id], onDelete: Cascade)
+  email   String
+  status  String   @default("inviato") // inviato | accettato | rifiutato
+  sentAt  DateTime @default(now())
+}
+
+model PromptEvent {
+  id             String       @id @default(cuid())
+  scheduleRuleId String
+  scheduleRule   ScheduleRule @relation(fields: [scheduleRuleId], references: [id], onDelete: Cascade)
+  participantId  String
+  participant    Participant  @relation(fields: [participantId], references: [id], onDelete: Cascade)
+  scheduledAt    DateTime
+  expiresAt      DateTime
+  status         String       @default("pending") // pending | responded | missed
+
+  response Response?
+}
+
+model Response {
+  id            String      @id @default(cuid())
+  promptEventId String      @unique
+  promptEvent   PromptEvent @relation(fields: [promptEventId], references: [id], onDelete: Cascade)
+  participantId String
+  participant   Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+  answers       String      @default("{}") // JSON
+  submittedAt   DateTime    @default(now())
+}

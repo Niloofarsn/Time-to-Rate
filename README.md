@@ -1,7 +1,11 @@
 # Time2Rate — Researcher web app
 
-Front-end (researcher side) of **Time2Rate**, a platform for running experience-sampling
-(EMA/ESM) research studies. Built from the Figma design system. **Mock data only — no backend yet.**
+Researcher side of **Time2Rate**, a platform for running experience-sampling (EMA/ESM)
+research studies. Built from the Figma design system.
+
+- **Frontend** — this folder (React + TypeScript + Vite). Uses in-memory mock data by default.
+- **Backend** — [`server/`](server/README.md) (Express + Prisma + SQLite): auth, studies/wizard,
+  participants, and the scheduling engine. Runs with zero external setup.
 
 ## Tech stack
 
