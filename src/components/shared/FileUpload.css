@@ -1,0 +1,16 @@
+.file-upload {
+  border: 1.5px dashed var(--border-form);
+  border-radius: var(--radius-control);
+  padding: var(--space-5) var(--space-4);
+  text-align: center;
+  cursor: pointer;
+  background: var(--gray-100);
+  transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+.file-upload:hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
+}
+.file-upload .bi { font-size: 28px; color: var(--gray-500); }
+.file-upload__text { font-size: var(--fs-sm); font-weight: var(--fw-medium); margin-top: 6px; }
+.file-upload__hint { font-size: var(--fs-xs); }

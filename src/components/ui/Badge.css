@@ -1,0 +1,15 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-medium);
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.badge--green { background: var(--soft-green-bg); color: var(--soft-green-fg); }
+.badge--yellow { background: var(--soft-yellow-bg); color: var(--soft-yellow-fg); }
+.badge--red { background: var(--soft-red-bg); color: var(--soft-red-fg); }
+.badge--gray { background: var(--soft-gray-bg); color: var(--soft-gray-fg); }

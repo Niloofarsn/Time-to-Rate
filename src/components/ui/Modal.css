@@ -1,0 +1,90 @@
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(16, 24, 40, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  z-index: 1000;
+  animation: overlay-in var(--dur) var(--ease);
+}
+
+@keyframes overlay-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal {
+  background: var(--bg-surface);
+  border-radius: var(--radius-modal);
+  box-shadow: var(--shadow-modal);
+  width: 100%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  animation: modal-in var(--dur) var(--ease);
+}
+
+@keyframes modal-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+
+.modal--sm { max-width: 420px; }
+.modal--md { max-width: 560px; }
+.modal--lg { max-width: 720px; }
+
+.modal__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-4) var(--space-3);
+}
+
+.modal__title { font-size: var(--fs-h6); font-weight: var(--fw-semibold); }
+
+.modal__close {
+  border: none;
+  background: transparent;
+  color: var(--gray-600);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: var(--radius-control);
+  font-size: 16px;
+  line-height: 1;
+}
+.modal__close:hover { background: var(--gray-100); color: var(--text-body); }
+
+.modal__body {
+  padding: 0 var(--space-4) var(--space-4);
+  overflow-y: auto;
+}
+
+.modal__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--border-card);
+}
+
+/* Feedback modal */
+.modal--feedback {
+  max-width: 380px;
+  align-items: center;
+  text-align: center;
+  padding: var(--space-5) var(--space-4) var(--space-4);
+  position: relative;
+}
+.modal--feedback .modal__close { position: absolute; top: 12px; right: 12px; }
+
+.feedback__icon { font-size: 40px; line-height: 1; margin-bottom: var(--space-3); }
+.feedback__icon--success { color: var(--color-success); }
+.feedback__icon--warning { color: var(--color-warning); }
+.feedback__icon--error { color: var(--color-danger); }
+
+.feedback__title { font-size: var(--fs-h5); margin-bottom: var(--space-2); }
+.feedback__msg { font-size: var(--fs-sm); margin-bottom: var(--space-4); }
+.feedback__action { align-self: stretch; display: flex; justify-content: flex-end; }

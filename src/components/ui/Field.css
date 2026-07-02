@@ -1,0 +1,90 @@
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field__label {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  color: var(--text-body);
+}
+
+.field__req { color: var(--color-danger); }
+
+.field__msg {
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}
+
+.field__msg--error { color: var(--color-danger); }
+
+.control {
+  width: 100%;
+  padding: 9px 12px;
+  font-size: var(--fs-body);
+  font-family: inherit;
+  color: var(--text-body);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-form);
+  border-radius: var(--radius-control);
+  transition: border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+
+.control::placeholder { color: var(--gray-500); }
+
+.control:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+
+.control:disabled {
+  background: var(--gray-100);
+  cursor: not-allowed;
+}
+
+.control--textarea {
+  min-height: 96px;
+  resize: vertical;
+  line-height: var(--lh-body);
+}
+
+.field--error .control {
+  border-color: var(--color-danger);
+}
+.field--error .control:focus {
+  box-shadow: 0 0 0 3px var(--soft-red-bg);
+}
+
+/* Select */
+.control-select-wrap { position: relative; }
+.control--select {
+  appearance: none;
+  padding-right: 36px;
+  cursor: pointer;
+}
+.control-select-caret {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--gray-600);
+  font-size: 14px;
+}
+
+/* Checkbox / radio */
+.choice {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--fs-body);
+  cursor: pointer;
+}
+.choice input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--color-primary);
+  cursor: pointer;
+}

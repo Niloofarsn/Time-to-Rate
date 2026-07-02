@@ -1,0 +1,133 @@
+import type { Study, StudyGroup } from "./types";
+
+export const DEFAULT_GROUPS: StudyGroup[] = [
+  { id: "g-control", name: "Gruppo di controllo" },
+  { id: "g-exp-1", name: "Gruppo sperimentale 1" },
+  { id: "g-exp-2", name: "Gruppo sperimentale 2" },
+];
+
+export const CURRENT_USER = {
+  name: "Mario Rossi",
+  email: "mariorossi@unimib.it",
+  role: "Ricercatore",
+};
+
+export const mockStudies: Study[] = [
+  {
+    id: "s-stress",
+    title: "Stress momentaneo",
+    description:
+      "Analisi delle variazioni dello stress nella vita quotidiana in relazione al contesto e alle attività svolte.",
+    status: "attivo",
+    code: "ck4Zif342",
+    piName: "Mario Rossi",
+    startDate: "2026-01-12",
+    endDate: "2026-07-12",
+    groups: DEFAULT_GROUPS,
+    schedules: [
+      {
+        id: "sch-1",
+        groupId: "g-exp-1",
+        type: "time-contingent",
+        mode: "numero-giorni",
+        numberOfDays: 14,
+        promptsPerDay: 4,
+        windows: [
+          { id: "w1", label: "Finestra di campionamento", startTime: "09:00", endTime: "11:00" },
+          { id: "w2", label: "Finestra di campionamento", startTime: "13:00", endTime: "15:00" },
+          { id: "w3", label: "Finestra di campionamento", startTime: "17:00", endTime: "19:00" },
+        ],
+      },
+    ],
+    notifications: [
+      {
+        id: "n1",
+        title: "Notifica 1",
+        body: "È il momento di compilare il questionario.",
+        recipients: "Gruppo sperimentale 1",
+        trigger: "Inizio finestra",
+      },
+    ],
+    consent: [
+      { id: "c1", title: "Consenso informato Stress momentaneo", type: "Consenso informato", fileName: "consenso.pdf" },
+    ],
+    instructions: [{ id: "i1", title: "Istruzioni partecipanti", fileName: "istruzioni.pdf" }],
+    participants: [
+      { id: "p1", name: "Mario Rossi", email: "mario.rossi@example.com", groupId: "g-exp-1", compliance: "alta", compliancePct: 92, lastResponse: "2026-10-30", status: "attivo" },
+      { id: "p2", name: "Anna Bianchi", email: "anna.bianchi@example.com", groupId: "g-exp-1", compliance: "media", compliancePct: 58, lastResponse: "2026-10-30", status: "attivo" },
+      { id: "p3", name: "Sara Conti", email: "sara.conti@example.com", groupId: "g-exp-1", compliance: "bassa", compliancePct: 24, lastResponse: "2026-10-30", status: "attivo" },
+      { id: "p4", name: "Fabio Bellini", email: "fabio.bellini@example.com", groupId: "g-control", compliance: "inattivo", compliancePct: 0, lastResponse: null, status: "attivo" },
+    ],
+    createdAt: "2026-01-10",
+  },
+  {
+    id: "s-legami",
+    title: "Legami precoci",
+    description:
+      "Ricerca sull'influenza degli stili di attaccamento infantile sullo sviluppo della personalità in età adulta.",
+    status: "attivo",
+    code: "LGPATT",
+    piName: "Laura Giallo",
+    startDate: "2026-02-12",
+    endDate: "2026-10-24",
+    groups: DEFAULT_GROUPS,
+    schedules: [],
+    notifications: [],
+    consent: [],
+    instructions: [],
+    participants: [],
+    createdAt: "2026-02-01",
+  },
+  {
+    id: "s-peso",
+    title: "Peso emotivo",
+    description:
+      "Studio sui meccanismi psicologici alla base del rapporto disfunzionale con il cibo in giovani adulti.",
+    status: "attivo",
+    code: "PSEALI",
+    piName: "Mario Rossi",
+    startDate: "2026-01-25",
+    endDate: "2026-11-23",
+    groups: DEFAULT_GROUPS,
+    schedules: [],
+    notifications: [],
+    consent: [],
+    instructions: [],
+    participants: [],
+    createdAt: "2026-01-20",
+  },
+  {
+    id: "s-mente",
+    title: "Mente attiva",
+    description: "Studio esplorativo sui processi attentivi durante attività quotidiane.",
+    status: "bozza",
+    code: "—",
+    piName: "Luca Verde",
+    startDate: null,
+    endDate: null,
+    groups: DEFAULT_GROUPS,
+    schedules: [],
+    notifications: [],
+    consent: [],
+    instructions: [],
+    participants: [],
+    createdAt: "2026-03-01",
+  },
+  {
+    id: "s-sonno",
+    title: "Sonno profondo",
+    description: "Relazione tra qualità del sonno e regolazione emotiva.",
+    status: "completato",
+    code: "SNPMEM",
+    piName: "Anna Bianchi",
+    startDate: "2024-01-15",
+    endDate: "2024-03-23",
+    groups: DEFAULT_GROUPS,
+    schedules: [],
+    notifications: [],
+    consent: [],
+    instructions: [],
+    participants: [],
+    createdAt: "2024-01-10",
+  },
+];

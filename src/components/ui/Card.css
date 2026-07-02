@@ -1,0 +1,8 @@
+.card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-control);
+  box-shadow: var(--shadow-card);
+}
+
+.card--padded { padding: var(--space-4); }

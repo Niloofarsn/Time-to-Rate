@@ -1,0 +1,30 @@
+.dash__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-5);
+  margin-bottom: var(--space-4);
+}
+.dash__meta-item { display: flex; flex-direction: column; gap: 6px; }
+.dash__meta-label { font-size: var(--fs-xs); }
+
+.dash__grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+}
+@media (max-width: 900px) {
+  .dash__grid { grid-template-columns: 1fr; }
+}
+
+.dash__card-title { font-weight: var(--fw-semibold); margin-bottom: var(--space-3); }
+
+.dash__participants-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-3);
+}
+
+.dash__participant-name { font-weight: var(--fw-medium); }
+.dash__actions-col { text-align: right; }

@@ -1,0 +1,59 @@
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  border: 1px solid transparent;
+  border-radius: var(--radius-control);
+  font-weight: var(--fw-medium);
+  line-height: 1.2;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease),
+    color var(--dur) var(--ease);
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+/* Sizes */
+.btn--sm { padding: 6px 12px; font-size: var(--fs-sm); }
+.btn--md { padding: 9px 16px; font-size: var(--fs-body); }
+.btn--lg { padding: 12px 22px; font-size: var(--fs-body); }
+
+.btn--icon.btn--sm { padding: 6px; }
+.btn--icon.btn--md { padding: 9px; }
+.btn--icon.btn--lg { padding: 12px; }
+
+.btn .bi { font-size: 1em; line-height: 1; }
+
+/* Primary */
+.btn--primary { background: var(--color-primary); color: var(--text-on-primary); }
+.btn--primary:hover:not(:disabled) { background: var(--color-primary-hover); }
+.btn--primary:active:not(:disabled) { background: var(--color-primary-active); }
+
+/* Secondary (grey) */
+.btn--secondary { background: var(--gray-600); color: #fff; }
+.btn--secondary:hover:not(:disabled) { background: var(--gray-700); }
+
+/* Base (subtle) */
+.btn--base { background: var(--bg-surface); color: var(--text-body); border-color: var(--border-form); }
+.btn--base:hover:not(:disabled) { background: var(--gray-100); }
+
+/* Outline primary */
+.btn--outline { background: transparent; color: var(--color-primary); border-color: var(--color-primary); }
+.btn--outline:hover:not(:disabled) { background: var(--color-primary-light); }
+
+/* Outline secondary */
+.btn--outline-secondary { background: transparent; color: var(--gray-700); border-color: var(--gray-400); }
+.btn--outline-secondary:hover:not(:disabled) { background: var(--gray-100); }
+
+/* Danger */
+.btn--danger { background: var(--color-danger); color: #fff; }
+.btn--danger:hover:not(:disabled) { background: #bb2d3b; }
+
+/* Link */
+.btn--link { background: transparent; color: var(--color-primary); padding-inline: 4px; }
+.btn--link:hover:not(:disabled) { text-decoration: underline; }
