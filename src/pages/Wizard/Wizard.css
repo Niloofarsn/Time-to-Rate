@@ -190,3 +190,15 @@
   align-items: flex-start;
 }
 .activation__check { color: var(--color-success); font-size: 22px; }
+
+/* Mobile/narrow: the rail stacks above the content in a single column, so it
+   must scroll normally. This override is placed at the end of the file so it
+   wins over the base `.wizard__rail { position: sticky }` rule above. */
+@media (max-width: 820px) {
+  .wizard__rail {
+    position: static;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-bottom: var(--space-3);
+  }
+}
