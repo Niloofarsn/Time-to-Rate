@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import { AppLayout } from "./components/layout/AppLayout";
+import { RequireAuth } from "./components/RequireAuth";
 import { LoginPage } from "./pages/Login/LoginPage";
 import { StudiesPage } from "./pages/Studies/StudiesPage";
 import { StudyDashboard } from "./pages/StudyDashboard/StudyDashboard";
@@ -19,6 +20,7 @@ export function App() {
     <Routes>
       <Route path="/login" element={<LoginPage />} />
 
+      <Route element={<RequireAuth />}>
       <Route element={<AppLayout />}>
         <Route index element={<Navigate to="/studi" replace />} />
         <Route path="/studi" element={<StudiesPage />} />
@@ -39,6 +41,7 @@ export function App() {
         <Route path="/profilo" element={<SimplePage title="Profilo" icon="person" />} />
         <Route path="/guida" element={<SimplePage title="Guida" icon="question-circle" />} />
         <Route path="/avvisi" element={<SimplePage title="Avvisi" icon="bell" />} />
+      </Route>
       </Route>
 
       <Route path="*" element={<Navigate to="/studi" replace />} />

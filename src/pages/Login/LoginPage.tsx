@@ -1,18 +1,30 @@
 import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Input, Checkbox } from "../../components/ui";
+import { useAuth } from "../../context/AuthContext";
 import "./LoginPage.css";
 
 export function LoginPage() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("mariorossi@unimib.it");
+  const { login } = useAuth();
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPw, setShowPw] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  const onSubmit = (e: FormEvent) => {
+  const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    // Mock auth — any credentials route to the studies list.
-    navigate("/studi");
+    setError(null);
+    setLoading(true);
+    try {
+      await login(email.trim(), password);
+      navigate("/studi");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Login non riuscito");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -68,8 +80,14 @@ export function LoginPage() {
             </a>
           </div>
 
-          <Button type="submit" size="lg" className="login__submit">
-            Accedi
+          {error && (
+            <p className="login__error text-sm">
+              <i className="bi bi-exclamation-circle" aria-hidden /> {error}
+            </p>
+          )}
+
+          <Button type="submit" size="lg" className="login__submit" disabled={loading}>
+            {loading ? "Accesso in corso…" : "Accedi"}
           </Button>
         </form>
 

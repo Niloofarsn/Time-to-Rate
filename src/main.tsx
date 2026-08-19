@@ -1,6 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
 import { StudiesProvider } from "./context/StudiesContext";
 import { App } from "./App";
 import "./styles/global.css";
@@ -8,9 +9,11 @@ import "./styles/global.css";
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
-      <StudiesProvider>
-        <App />
-      </StudiesProvider>
+      <AuthProvider>
+        <StudiesProvider>
+          <App />
+        </StudiesProvider>
+      </AuthProvider>
     </BrowserRouter>
   </StrictMode>,
 );

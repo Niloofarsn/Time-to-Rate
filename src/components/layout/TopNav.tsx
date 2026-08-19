@@ -1,4 +1,5 @@
 import { NavLink, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 import { Dropdown } from "../ui";
 import { CURRENT_USER } from "../../data/mockData";
 import { initials } from "../../lib/format";
@@ -6,6 +7,7 @@ import "./TopNav.css";
 
 export function TopNav() {
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
   return (
     <header className="topnav">
@@ -39,7 +41,14 @@ export function TopNav() {
             trigger={<span className="topnav__avatar">{initials(CURRENT_USER.name)}</span>}
             items={[
               { label: "Profilo", icon: "person", onClick: () => navigate("/profilo") },
-              { label: "Esci", icon: "box-arrow-right", onClick: () => navigate("/login") },
+              {
+                label: "Esci",
+                icon: "box-arrow-right",
+                onClick: () => {
+                  logout();
+                  navigate("/login");
+                },
+              },
             ]}
           />
         </div>

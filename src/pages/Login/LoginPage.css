@@ -63,3 +63,14 @@
 .login__submit { width: 100%; margin-top: var(--space-2); }
 
 .login__foot { text-align: center; margin-top: var(--space-4); }
+
+.login__error {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-danger);
+  background: var(--soft-red-bg);
+  border-radius: var(--radius-control);
+  padding: 8px 12px;
+  margin: 0;
+}

@@ -1,9 +1,22 @@
-import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
 import type { Participant, Study } from "../data/types";
-import { DEFAULT_GROUPS, mockStudies } from "../data/mockData";
+import { DEFAULT_GROUPS } from "../data/mockData";
+import { fetchStudies } from "../lib/studiesApi";
+import { useAuth } from "./AuthContext";
 
 interface StudiesContextValue {
   studies: Study[];
+  loading: boolean;
+  error: string | null;
+  refresh: () => Promise<void>;
   getStudy: (id: string) => Study | undefined;
   addStudy: (study: Study) => void;
   updateStudy: (id: string, patch: Partial<Study>) => void;
@@ -40,12 +53,38 @@ export function createEmptyStudy(): Study {
 }
 
 export function StudiesProvider({ children }: { children: ReactNode }) {
-  const [studies, setStudies] = useState<Study[]>(mockStudies);
+  const { isAuthenticated } = useAuth();
+  const [studies, setStudies] = useState<Study[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const refresh = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      setStudies(await fetchStudies());
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Errore nel caricamento degli studi");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // Load studies from the backend once the user is authenticated.
+  useEffect(() => {
+    if (isAuthenticated) refresh();
+    else setStudies([]);
+  }, [isAuthenticated, refresh]);
 
   const value = useMemo<StudiesContextValue>(
     () => ({
       studies,
+      loading,
+      error,
+      refresh,
       getStudy: (id) => studies.find((s) => s.id === id),
+      // NOTE: the mutations below currently update local state only. Persisting
+      // create/edit/delete to the backend is the next integration step.
       addStudy: (study) => setStudies((prev) => [study, ...prev]),
       updateStudy: (id, patch) =>
         setStudies((prev) => prev.map((s) => (s.id === id ? { ...s, ...patch } : s))),
@@ -82,7 +121,7 @@ export function StudiesProvider({ children }: { children: ReactNode }) {
           ),
         ),
     }),
-    [studies],
+    [studies, loading, error, refresh],
   );
 
   return <StudiesContext.Provider value={value}>{children}</StudiesContext.Provider>;

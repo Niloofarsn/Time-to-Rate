@@ -19,7 +19,7 @@ type Filter = "tutti" | "attivo" | "bozza" | "completato";
 
 export function StudiesPage() {
   const navigate = useNavigate();
-  const { studies, addStudy, duplicateStudy, deleteStudy } = useStudies();
+  const { studies, loading, error, addStudy, duplicateStudy, deleteStudy } = useStudies();
   const [filter, setFilter] = useState<Filter>("tutti");
   const [shareStudy, setShareStudy] = useState<Study | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Study | null>(null);
@@ -49,6 +49,26 @@ export function StudiesPage() {
           Aggiungi
         </Button>
       </div>
+
+      {loading && (
+        <p className="muted text-sm" style={{ marginBottom: "var(--space-3)" }}>
+          <i className="bi bi-arrow-repeat" aria-hidden /> Caricamento degli studi dal server…
+        </p>
+      )}
+      {error && (
+        <p
+          className="text-sm"
+          style={{
+            marginBottom: "var(--space-3)",
+            color: "var(--color-danger)",
+            background: "var(--soft-red-bg)",
+            padding: "8px 12px",
+            borderRadius: "var(--radius-control)",
+          }}
+        >
+          <i className="bi bi-exclamation-circle" aria-hidden /> {error}
+        </p>
+      )}
 
       {/* Active studies cards */}
       <section className="studies__section">
