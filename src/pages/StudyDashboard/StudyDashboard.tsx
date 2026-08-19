@@ -51,7 +51,7 @@ export function StudyDashboard() {
       <div className="page-header">
         <h2>{study.title}</h2>
         <div className="row">
-          <Button variant="base" icon="pencil-square" onClick={() => navigate(`/studi/${study.id}/crea/dettagli`)}>
+          <Button variant="base" icon="pencil-square" onClick={() => navigate(`/studi/${study.id}/modifica/dettagli`)}>
             Modifica
           </Button>
           <Button variant="base" icon="share" onClick={() => setShare(true)}>

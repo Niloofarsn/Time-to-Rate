@@ -13,6 +13,14 @@ import { StepConsenso } from "./pages/Wizard/steps/StepConsenso";
 import { StepIstruzioni } from "./pages/Wizard/steps/StepIstruzioni";
 import { StepRiepilogo } from "./pages/Wizard/steps/StepRiepilogo";
 import { StepAttivazione } from "./pages/Wizard/steps/StepAttivazione";
+import { EditStudyLayout } from "./pages/EditStudy/EditStudyLayout";
+import { EditDettagli } from "./pages/EditStudy/sections/EditDettagli";
+import { EditPianificazioni } from "./pages/EditStudy/sections/EditPianificazioni";
+import { EditNotifiche } from "./pages/EditStudy/sections/EditNotifiche";
+import { EditConsenso } from "./pages/EditStudy/sections/EditConsenso";
+import { EditIstruzioni } from "./pages/EditStudy/sections/EditIstruzioni";
+import { EditRiepilogo } from "./pages/EditStudy/sections/EditRiepilogo";
+import { EditAttivazione } from "./pages/EditStudy/sections/EditAttivazione";
 import { SimplePage } from "./pages/Stubs/SimplePage";
 
 export function App() {
@@ -36,6 +44,17 @@ export function App() {
           <Route path="istruzioni" element={<StepIstruzioni />} />
           <Route path="riepilogo" element={<StepRiepilogo />} />
           <Route path="attivazione" element={<StepAttivazione />} />
+        </Route>
+
+        <Route path="/studi/:id/modifica" element={<EditStudyLayout />}>
+          <Route index element={<Navigate to="dettagli" replace />} />
+          <Route path="dettagli" element={<EditDettagli />} />
+          <Route path="pianificazioni" element={<EditPianificazioni />} />
+          <Route path="notifiche" element={<EditNotifiche />} />
+          <Route path="consenso" element={<EditConsenso />} />
+          <Route path="istruzioni" element={<EditIstruzioni />} />
+          <Route path="riepilogo" element={<EditRiepilogo />} />
+          <Route path="attivazione" element={<EditAttivazione />} />
         </Route>
 
         <Route path="/profilo" element={<SimplePage title="Profilo" icon="person" />} />

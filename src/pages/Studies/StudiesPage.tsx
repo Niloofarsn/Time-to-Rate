@@ -37,7 +37,13 @@ export function StudiesPage() {
     navigate(`/studi/${study.id}/crea/dettagli`);
   };
 
-  const editStudy = (s: Study) => navigate(`/studi/${s.id}/crea/dettagli`);
+  // Drafts continue in the creation wizard; active/completed studies open the edit view.
+  const editStudy = (s: Study) =>
+    navigate(
+      s.status === "bozza"
+        ? `/studi/${s.id}/crea/dettagli`
+        : `/studi/${s.id}/modifica/dettagli`,
+    );
   const openStudy = (s: Study) =>
     s.status === "bozza" ? editStudy(s) : navigate(`/studi/${s.id}`);
 
