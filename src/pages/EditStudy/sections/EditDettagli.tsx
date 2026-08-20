@@ -1,11 +1,28 @@
 import { useState } from "react";
 import { Button, Input, Textarea, FeedbackModal } from "../../../components/ui";
 import { useEditStudy } from "../useEditStudy";
+import { useStudies } from "../../../context/StudiesContext";
 
 export function EditDettagli() {
-  const { study, update } = useEditStudy();
+  const { id, study, update } = useEditStudy();
+  const { persistStudyDetails } = useStudies();
   const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   if (!study) return null;
+
+  const onSave = async () => {
+    setSaving(true);
+    setError(null);
+    try {
+      if (id) await persistStudyDetails(id);
+      setSaved(true);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Salvataggio non riuscito");
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <div>
@@ -30,9 +47,15 @@ export function EditDettagli() {
         />
       </div>
 
+      {error && (
+        <p className="text-sm" style={{ color: "var(--color-danger)", marginTop: "var(--space-3)" }}>
+          <i className="bi bi-exclamation-circle" aria-hidden /> {error}
+        </p>
+      )}
+
       <div className="wizard__footer" style={{ justifyContent: "flex-end" }}>
-        <Button onClick={() => setSaved(true)} disabled={!study.title.trim()}>
-          Salva
+        <Button onClick={onSave} disabled={!study.title.trim() || saving}>
+          {saving ? "Salvataggio…" : "Salva"}
         </Button>
       </div>
 

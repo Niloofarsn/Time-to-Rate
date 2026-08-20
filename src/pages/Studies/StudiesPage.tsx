@@ -5,12 +5,15 @@ import {
   Card,
   ConfirmDialog,
   Dropdown,
+  Input,
+  Modal,
   StatusBadge,
   Table,
   Tabs,
+  Textarea,
 } from "../../components/ui";
 import { ShareModal } from "../../components/shared/ShareModal";
-import { useStudies, createEmptyStudy } from "../../context/StudiesContext";
+import { useStudies } from "../../context/StudiesContext";
 import type { Study } from "../../data/types";
 import { formatDateRange } from "../../lib/format";
 import "./StudiesPage.css";
@@ -19,10 +22,17 @@ type Filter = "tutti" | "attivo" | "bozza" | "completato";
 
 export function StudiesPage() {
   const navigate = useNavigate();
-  const { studies, loading, error, addStudy, duplicateStudy, deleteStudy } = useStudies();
+  const { studies, loading, error, createStudy, duplicateStudy, deleteStudy } = useStudies();
   const [filter, setFilter] = useState<Filter>("tutti");
   const [shareStudy, setShareStudy] = useState<Study | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Study | null>(null);
+
+  // New-study modal (persists to the backend on create)
+  const [newOpen, setNewOpen] = useState(false);
+  const [newTitle, setNewTitle] = useState("");
+  const [newDesc, setNewDesc] = useState("");
+  const [creating, setCreating] = useState(false);
+  const [createError, setCreateError] = useState<string | null>(null);
 
   const activeStudies = studies.filter((s) => s.status === "attivo");
 
@@ -31,10 +41,20 @@ export function StudiesPage() {
     [studies, filter],
   );
 
-  const startNewStudy = () => {
-    const study = createEmptyStudy();
-    addStudy(study);
-    navigate(`/studi/${study.id}/crea/dettagli`);
+  const submitNewStudy = async () => {
+    setCreating(true);
+    setCreateError(null);
+    try {
+      const study = await createStudy(newTitle.trim(), newDesc.trim());
+      setNewOpen(false);
+      setNewTitle("");
+      setNewDesc("");
+      navigate(`/studi/${study.id}/modifica/dettagli`);
+    } catch (e) {
+      setCreateError(e instanceof Error ? e.message : "Creazione non riuscita");
+    } finally {
+      setCreating(false);
+    }
   };
 
   // Drafts continue in the creation wizard; active/completed studies open the edit view.
@@ -51,7 +71,7 @@ export function StudiesPage() {
     <div className="container page">
       <div className="page-header">
         <h2>I miei studi</h2>
-        <Button icon="plus-lg" onClick={startNewStudy}>
+        <Button icon="plus-lg" onClick={() => setNewOpen(true)}>
           Aggiungi
         </Button>
       </div>
@@ -206,6 +226,43 @@ export function StudiesPage() {
         title={`Eliminare "${deleteTarget?.title}"?`}
         message="Se decidi di procedere l'elemento verrà eliminato definitivamente."
       />
+
+      <Modal
+        open={newOpen}
+        onClose={() => setNewOpen(false)}
+        title="Nuovo studio"
+        footer={
+          <>
+            <Button variant="base" onClick={() => setNewOpen(false)}>
+              Annulla
+            </Button>
+            <Button onClick={submitNewStudy} disabled={!newTitle.trim() || creating}>
+              {creating ? "Creazione…" : "Crea studio"}
+            </Button>
+          </>
+        }
+      >
+        <div className="stack">
+          <Input
+            label="Titolo"
+            required
+            placeholder="Titolo dello studio"
+            value={newTitle}
+            onChange={(e) => setNewTitle(e.target.value)}
+          />
+          <Textarea
+            label="Descrizione"
+            placeholder="Breve descrizione dello studio."
+            value={newDesc}
+            onChange={(e) => setNewDesc(e.target.value)}
+          />
+          {createError && (
+            <p className="text-sm" style={{ color: "var(--color-danger)" }}>
+              <i className="bi bi-exclamation-circle" aria-hidden /> {createError}
+            </p>
+          )}
+        </div>
+      </Modal>
     </div>
   );
 }
