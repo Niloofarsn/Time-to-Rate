@@ -1,13 +1,13 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { Dropdown } from "../ui";
-import { CURRENT_USER } from "../../data/mockData";
 import { initials } from "../../lib/format";
 import "./TopNav.css";
 
 export function TopNav() {
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { logout, user, role } = useAuth();
+  const displayName = user?.fullName || user?.name || user?.mail || "Utente";
 
   return (
     <header className="topnav">
@@ -23,6 +23,11 @@ export function TopNav() {
             <NavLink to="/studi" className="topnav__link">
               I miei studi
             </NavLink>
+            {role === "ADMIN" && (
+              <NavLink to="/utenti" className="topnav__link">
+                Utenti
+              </NavLink>
+            )}
             <NavLink to="/guida" className="topnav__link">
               Guida
             </NavLink>
@@ -38,7 +43,7 @@ export function TopNav() {
           </button>
           <Dropdown
             align="right"
-            trigger={<span className="topnav__avatar">{initials(CURRENT_USER.name)}</span>}
+            trigger={<span className="topnav__avatar">{initials(displayName)}</span>}
             items={[
               { label: "Profilo", icon: "person", onClick: () => navigate("/profilo") },
               {

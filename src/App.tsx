@@ -1,7 +1,9 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import { AppLayout } from "./components/layout/AppLayout";
 import { RequireAuth } from "./components/RequireAuth";
+import { RequireRole } from "./components/RequireRole";
 import { LoginPage } from "./pages/Login/LoginPage";
+import { UsersPage } from "./pages/Users/UsersPage";
 import { StudiesPage } from "./pages/Studies/StudiesPage";
 import { StudyDashboard } from "./pages/StudyDashboard/StudyDashboard";
 import { ParticipantDetails } from "./pages/ParticipantDetails/ParticipantDetails";
@@ -55,6 +57,10 @@ export function App() {
           <Route path="istruzioni" element={<EditIstruzioni />} />
           <Route path="riepilogo" element={<EditRiepilogo />} />
           <Route path="attivazione" element={<EditAttivazione />} />
+        </Route>
+
+        <Route element={<RequireRole roles={["ADMIN"]} />}>
+          <Route path="/utenti" element={<UsersPage />} />
         </Route>
 
         <Route path="/profilo" element={<SimplePage title="Profilo" icon="person" />} />

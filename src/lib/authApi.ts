@@ -10,6 +10,26 @@ export interface CmsUser {
   role: "RESEARCHER" | "PI" | "ADMIN";
 }
 
+const USER_KEY = "t2r_user";
+
+function cacheUser(user: CmsUser): void {
+  try {
+    localStorage.setItem(USER_KEY, JSON.stringify(user));
+  } catch {
+    /* storage may be unavailable */
+  }
+}
+
+/** Read the cached logged-in user (set at login), or null. */
+export function getCachedUser(): CmsUser | null {
+  try {
+    const raw = localStorage.getItem(USER_KEY);
+    return raw ? (JSON.parse(raw) as CmsUser) : null;
+  } catch {
+    return null;
+  }
+}
+
 interface LoginResponse {
   success: boolean;
   msg: string;
@@ -36,9 +56,15 @@ export async function login(email: string, password: string): Promise<CmsUser> {
     throw new Error(res?.msg || "Login non riuscito");
   }
   setToken(res.result.token);
+  cacheUser(res.result.user);
   return res.result.user;
 }
 
 export function logout(): void {
   clearToken();
+  try {
+    localStorage.removeItem(USER_KEY);
+  } catch {
+    /* ignore */
+  }
 }
