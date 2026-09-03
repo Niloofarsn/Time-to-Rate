@@ -80,6 +80,7 @@ export interface Study {
   instructions: InstructionDocument[];
   participants: Participant[];
   createdAt: string;
+  createdBy?: string; // creator name (shown to admins in the all-studies view)
 }
 
 // Compliance thresholds → badge level

@@ -14,6 +14,7 @@ import {
 } from "../../components/ui";
 import { ShareModal } from "../../components/shared/ShareModal";
 import { useStudies } from "../../context/StudiesContext";
+import { useAuth } from "../../context/AuthContext";
 import type { Study } from "../../data/types";
 import { formatDateRange } from "../../lib/format";
 import "./StudiesPage.css";
@@ -22,6 +23,8 @@ type Filter = "tutti" | "attivo" | "bozza" | "completato";
 
 export function StudiesPage() {
   const navigate = useNavigate();
+  const { role } = useAuth();
+  const isAdmin = role === "ADMIN";
   const { studies, loading, error, createStudy, duplicateStudy, deleteStudy } = useStudies();
   const [filter, setFilter] = useState<Filter>("tutti");
   const [shareStudy, setShareStudy] = useState<Study | null>(null);
@@ -70,7 +73,7 @@ export function StudiesPage() {
   return (
     <div className="container page">
       <div className="page-header">
-        <h2>I miei studi</h2>
+        <h2>{isAdmin ? "Tutti gli studi" : "I miei studi"}</h2>
         <Button icon="plus-lg" onClick={() => setNewOpen(true)}>
           Aggiungi
         </Button>
@@ -167,6 +170,7 @@ export function StudiesPage() {
               <th>Nome dello studio</th>
               <th>Start date → End date</th>
               <th>PI di riferimento</th>
+              {isAdmin && <th>Creato da</th>}
               <th>Codice dello studio</th>
               <th>Stato dello studio</th>
               <th className="studies__actions-col">Azioni</th>
@@ -178,6 +182,7 @@ export function StudiesPage() {
                 <td className="studies__name">{s.title}</td>
                 <td>{formatDateRange(s.startDate, s.endDate)}</td>
                 <td>PI: {s.piName}</td>
+                {isAdmin && <td>{s.createdBy ?? "—"}</td>}
                 <td>{s.code}</td>
                 <td>
                   <StatusBadge status={s.status} />

@@ -14,8 +14,10 @@ import {
   fetchUsers,
   createUser,
   deleteUser,
+  STATUS_LABEL,
   type ManagedUser,
   type UserRole,
+  type ResearcherStatus,
 } from "../../lib/usersApi";
 import { formatDate } from "../../lib/format";
 
@@ -89,6 +91,7 @@ export function UsersPage() {
               <th>Nome</th>
               <th>Email</th>
               <th>Ruolo</th>
+              <th>Stato</th>
               <th>Data creazione</th>
               <th style={{ textAlign: "right" }}>Azioni</th>
             </tr>
@@ -101,6 +104,7 @@ export function UsersPage() {
                 <td>
                   <Badge tone={ROLE_TONE[u.role]}>{ROLE_LABEL[u.role]}</Badge>
                 </td>
+                <td className="muted">{u.role === "RESEARCHER" ? STATUS_LABEL[u.status] : "—"}</td>
                 <td>{formatDate(u.createdAt)}</td>
                 <td>
                   <div className="cell-actions">
@@ -165,6 +169,7 @@ function AddUserModal({
   const [surname, setSurname] = useState("");
   const [mail, setMail] = useState("");
   const [role, setRole] = useState<UserRole>("RESEARCHER");
+  const [status, setStatus] = useState<ResearcherStatus>("PHD");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -173,7 +178,13 @@ function AddUserModal({
     setSaving(true);
     setError(null);
     try {
-      await createUser({ name, surname, mail: mail.trim(), role });
+      await createUser({
+        name,
+        surname,
+        mail: mail.trim(),
+        role,
+        status: role === "RESEARCHER" ? status : "",
+      });
       onCreated(mail.trim());
     } catch (err) {
       setError(err instanceof Error ? err.message : "Creazione non riuscita");
@@ -214,6 +225,18 @@ function AddUserModal({
             { value: "PI", label: "PI (Principal Investigator)" },
           ]}
         />
+        {role === "RESEARCHER" && (
+          <Select
+            label="Stato accademico"
+            value={status}
+            onChange={(e) => setStatus(e.target.value as ResearcherStatus)}
+            options={[
+              { value: "UNDERGRADUATE", label: "Undergraduate" },
+              { value: "PHD", label: "PhD" },
+              { value: "POSTDOC", label: "Post-doc" },
+            ]}
+          />
+        )}
         {error && (
           <p className="text-sm" style={{ color: "var(--color-danger)", margin: 0 }}>
             <i className="bi bi-exclamation-circle" aria-hidden /> {error}

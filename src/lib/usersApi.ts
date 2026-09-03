@@ -1,6 +1,14 @@
 import { apiRequest } from "./api";
 
 export type UserRole = "RESEARCHER" | "PI" | "ADMIN";
+export type ResearcherStatus = "UNDERGRADUATE" | "PHD" | "POSTDOC" | "";
+
+export const STATUS_LABEL: Record<ResearcherStatus, string> = {
+  UNDERGRADUATE: "Undergraduate",
+  PHD: "PhD",
+  POSTDOC: "Post-doc",
+  "": "—",
+};
 
 export interface ManagedUser {
   id: string;
@@ -9,6 +17,7 @@ export interface ManagedUser {
   fullName: string;
   mail: string;
   role: UserRole;
+  status: ResearcherStatus;
   createdAt: string | null;
 }
 
@@ -20,6 +29,7 @@ interface BackendUser {
   fullName?: string;
   mail: string;
   role: UserRole;
+  status?: ResearcherStatus;
   createdAt?: string;
 }
 
@@ -31,6 +41,7 @@ function mapUser(u: BackendUser): ManagedUser {
     fullName: u.fullName || [u.name, u.surname].filter(Boolean).join(" ") || u.mail,
     mail: u.mail,
     role: u.role,
+    status: u.status || "",
     createdAt: u.createdAt ? u.createdAt.slice(0, 10) : null,
   };
 }
@@ -47,6 +58,7 @@ export async function createUser(data: {
   surname: string;
   mail: string;
   role: UserRole;
+  status?: ResearcherStatus;
 }): Promise<ManagedUser> {
   const res = await apiRequest<{ success: boolean; result: BackendUser }>("/users", {
     method: "PUT",

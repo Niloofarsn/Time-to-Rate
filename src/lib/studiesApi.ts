@@ -23,6 +23,7 @@ interface BackendSurvey {
   dateStart?: string | null;
   dateEnd?: string | null;
   referrerPI?: BackendCmsUser | null;
+  createdBy?: BackendCmsUser | null;
   pendingAuthorizationRequest?: boolean;
   createdAt?: string;
 }
@@ -66,6 +67,7 @@ export function mapSurveyToStudy(s: BackendSurvey): Study {
     startDate: dateOnly(s.dateStart),
     endDate: dateOnly(s.dateEnd),
     createdAt: dateOnly(s.createdAt) || "",
+    createdBy: s.createdBy ? piName(s.createdBy) : undefined,
     // The list endpoint returns summaries; details are loaded per-study later.
     groups: [],
     schedules: [],
