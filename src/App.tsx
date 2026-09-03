@@ -4,6 +4,7 @@ import { RequireAuth } from "./components/RequireAuth";
 import { RequireRole } from "./components/RequireRole";
 import { LoginPage } from "./pages/Login/LoginPage";
 import { UsersPage } from "./pages/Users/UsersPage";
+import { AvvisiPage } from "./pages/Avvisi/AvvisiPage";
 import { StudiesPage } from "./pages/Studies/StudiesPage";
 import { StudyDashboard } from "./pages/StudyDashboard/StudyDashboard";
 import { ParticipantDetails } from "./pages/ParticipantDetails/ParticipantDetails";
@@ -65,7 +66,7 @@ export function App() {
 
         <Route path="/profilo" element={<SimplePage title="Profilo" icon="person" />} />
         <Route path="/guida" element={<SimplePage title="Guida" icon="question-circle" />} />
-        <Route path="/avvisi" element={<SimplePage title="Avvisi" icon="bell" />} />
+        <Route path="/avvisi" element={<AvvisiPage />} />
       </Route>
       </Route>
 

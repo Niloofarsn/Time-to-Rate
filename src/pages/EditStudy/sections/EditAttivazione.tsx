@@ -1,14 +1,33 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, StatusBadge } from "../../../components/ui";
+import { Button, StatusBadge, FeedbackModal } from "../../../components/ui";
 import { useEditStudy } from "../useEditStudy";
+import { useAuth } from "../../../context/AuthContext";
+import { RequestActivationModal } from "../../../components/shared/RequestActivationModal";
+import { approveStudy } from "../../../lib/avvisiApi";
 import { formatDate, formatDateRange } from "../../../lib/format";
 
 export function EditAttivazione() {
   const navigate = useNavigate();
   const { id, study, update } = useEditStudy();
+  const { role } = useAuth();
+  const [requesting, setRequesting] = useState(false);
+  const [sent, setSent] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   if (!study) return null;
 
   const today = new Date().toISOString().slice(0, 10);
+  const canActivate = role === "PI" || role === "ADMIN";
+
+  const activate = async () => {
+    setError(null);
+    try {
+      if (id) await approveStudy(id);
+      update({ status: "attivo", startDate: study.startDate ?? today });
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Attivazione non riuscita");
+    }
+  };
 
   return (
     <div>
@@ -37,6 +56,12 @@ export function EditAttivazione() {
               Data di aggiornamento: {formatDate(today)}
             </p>
 
+            {error && (
+              <p className="text-sm" style={{ color: "var(--color-danger)", marginTop: 8 }}>
+                <i className="bi bi-exclamation-circle" aria-hidden /> {error}
+              </p>
+            )}
+
             <div className="row" style={{ marginTop: "var(--space-3)", gap: "var(--space-2)" }}>
               {study.status === "attivo" ? (
                 <Button
@@ -46,9 +71,13 @@ export function EditAttivazione() {
                 >
                   Concludi studio
                 </Button>
-              ) : (
-                <Button icon="rocket-takeoff" onClick={() => update({ status: "attivo", startDate: study.startDate ?? today })}>
+              ) : canActivate ? (
+                <Button icon="rocket-takeoff" onClick={activate}>
                   Attiva lo studio
+                </Button>
+              ) : (
+                <Button icon="send" onClick={() => setRequesting(true)}>
+                  Richiedi attivazione
                 </Button>
               )}
               <Button variant="base" onClick={() => navigate(`/studi/${id}`)}>
@@ -58,6 +87,25 @@ export function EditAttivazione() {
           </div>
         </div>
       </div>
+
+      {requesting && id && (
+        <RequestActivationModal
+          studyId={id}
+          onClose={() => setRequesting(false)}
+          onSent={() => {
+            setRequesting(false);
+            setSent(true);
+          }}
+        />
+      )}
+
+      <FeedbackModal
+        open={sent}
+        variant="success"
+        title="Richiesta inviata"
+        message="La richiesta di attivazione è stata inviata al PI selezionato."
+        onClose={() => setSent(false)}
+      />
     </div>
   );
 }
