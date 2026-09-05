@@ -1,10 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   Button,
   Card,
   ComplianceBadge,
-  ConfirmDialog,
   FeedbackModal,
   StatusBadge,
   Table,
@@ -16,19 +15,40 @@ import { StudyCalendar } from "./StudyCalendar";
 import { InviteModal } from "./InviteModal";
 import { useStudies } from "../../context/StudiesContext";
 import { formatDate } from "../../lib/format";
-import type { Participant } from "../../data/types";
+import { fetchParticipants, type StudyParticipant } from "../../lib/participantsApi";
+import { isBackendId } from "../../lib/studiesApi";
 import "./StudyDashboard.css";
+
+const TABLE_LIMIT = 100;
 
 export function StudyDashboard() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { getStudy, removeParticipant } = useStudies();
+  const { getStudy } = useStudies();
   const study = id ? getStudy(id) : undefined;
 
   const [invite, setInvite] = useState(false);
   const [share, setShare] = useState(false);
   const [sent, setSent] = useState(false);
-  const [removeTarget, setRemoveTarget] = useState<Participant | null>(null);
+
+  const [participants, setParticipants] = useState<StudyParticipant[]>([]);
+  const [total, setTotal] = useState(0);
+  const [loadingP, setLoadingP] = useState(false);
+
+  useEffect(() => {
+    if (!id || !isBackendId(id)) return;
+    setLoadingP(true);
+    fetchParticipants(id)
+      .then(({ participants, total }) => {
+        setParticipants(participants);
+        setTotal(total);
+      })
+      .catch(() => {
+        setParticipants([]);
+        setTotal(0);
+      })
+      .finally(() => setLoadingP(false));
+  }, [id]);
 
   if (!study) {
     return (
@@ -38,7 +58,7 @@ export function StudyDashboard() {
     );
   }
 
-  const groupName = (gid: string) => study.groups.find((g) => g.id === gid)?.name ?? "—";
+  const visible = participants.slice(0, TABLE_LIMIT);
 
   return (
     <div className="container page">
@@ -76,7 +96,7 @@ export function StudyDashboard() {
         </div>
         <div className="dash__meta-item">
           <span className="dash__meta-label muted">Totale partecipanti</span>
-          <span>{study.participants.length}</span>
+          <span>{loadingP ? "…" : total}</span>
         </div>
       </Card>
 
@@ -87,10 +107,17 @@ export function StudyDashboard() {
         </Card>
         <Card>
           <h6 className="dash__card-title">Compliance dei partecipanti</h6>
-          {study.participants.length === 0 ? (
-            <EmptyState icon="bar-chart" title="Nessun dato" subtitle="Invita partecipanti per vedere la compliance." />
+          {loadingP ? (
+            <EmptyState icon="hourglass-split" title="Caricamento…" />
+          ) : participants.length === 0 ? (
+            <EmptyState icon="bar-chart" title="Nessun dato" subtitle="Nessun partecipante iscritto a questo studio." />
           ) : (
-            <ComplianceChart participants={study.participants} />
+            <>
+              <ComplianceChart participants={participants} />
+              <p className="muted text-xs" style={{ textAlign: "center", marginTop: "var(--space-2)" }}>
+                Compliance relativa al partecipante più attivo dello studio.
+              </p>
+            </>
           )}
         </Card>
       </div>
@@ -103,52 +130,48 @@ export function StudyDashboard() {
         </Button>
       </div>
 
-      {study.participants.length === 0 ? (
+      {loadingP ? (
+        <Card>
+          <p className="muted text-sm">
+            <i className="bi bi-arrow-repeat" aria-hidden /> Caricamento dei partecipanti…
+          </p>
+        </Card>
+      ) : participants.length === 0 ? (
         <Card padded={false}>
-          <EmptyState icon="people" title="Nessun partecipante" subtitle="Aggiungi partecipanti per iniziare a raccogliere dati." />
+          <EmptyState icon="people" title="Nessun partecipante" subtitle="Nessuno si è ancora iscritto a questo studio." />
         </Card>
       ) : (
-        <Table>
-          <thead>
-            <tr>
-              <th>Nome partecipante</th>
-              <th>Compliance</th>
-              <th>Condizione</th>
-              <th>Ultima risposta</th>
-              <th className="dash__actions-col">Azioni</th>
-            </tr>
-          </thead>
-          <tbody>
-            {study.participants.map((p) => (
-              <tr key={p.id}>
-                <td className="dash__participant-name">{p.name}</td>
-                <td>
-                  <ComplianceBadge level={p.compliance} />
-                </td>
-                <td>{groupName(p.groupId)}</td>
-                <td>{formatDate(p.lastResponse)}</td>
-                <td>
-                  <div className="cell-actions">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => navigate(`/studi/${study.id}/partecipanti/${p.id}`)}
-                    >
-                      Dettagli
-                    </Button>
-                    <button
-                      className="icon-btn icon-btn--danger"
-                      aria-label="Rimuovi"
-                      onClick={() => setRemoveTarget(p)}
-                    >
-                      <i className="bi bi-trash" aria-hidden />
-                    </button>
-                  </div>
-                </td>
+        <>
+          <Table>
+            <thead>
+              <tr>
+                <th>Partecipante</th>
+                <th>Email</th>
+                <th>Compliance</th>
+                <th>Risposte</th>
+                <th>Ultima risposta</th>
               </tr>
-            ))}
-          </tbody>
-        </Table>
+            </thead>
+            <tbody>
+              {visible.map((p) => (
+                <tr key={p.id}>
+                  <td className="dash__participant-name">{p.name}</td>
+                  <td>{p.email}</td>
+                  <td>
+                    <ComplianceBadge level={p.compliance} />
+                  </td>
+                  <td>{p.respondedCount}</td>
+                  <td>{formatDate(p.lastResponse)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+          {total > TABLE_LIMIT && (
+            <p className="muted text-sm" style={{ marginTop: "var(--space-2)" }}>
+              Mostrati i primi {TABLE_LIMIT} di {total} partecipanti.
+            </p>
+          )}
+        </>
       )}
 
       {/* Modals */}
@@ -169,13 +192,6 @@ export function StudyDashboard() {
         message="I partecipanti sono stati correttamente invitati allo studio."
         actionLabel="Torna allo studio"
         onClose={() => setSent(false)}
-      />
-      <ConfirmDialog
-        open={!!removeTarget}
-        onClose={() => setRemoveTarget(null)}
-        onConfirm={() => removeTarget && removeParticipant(study.id, removeTarget.id)}
-        title={`Eliminare "${removeTarget?.name}" dallo studio?`}
-        message="Se decidi di procedere il partecipante verrà rimosso definitivamente."
       />
     </div>
   );

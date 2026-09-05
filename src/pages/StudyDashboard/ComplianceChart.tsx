@@ -1,4 +1,4 @@
-import type { Participant } from "../../data/types";
+import type { ComplianceLevel } from "../../data/types";
 import "./ComplianceChart.css";
 
 const LEVELS = [
@@ -8,7 +8,7 @@ const LEVELS = [
   { key: "inattivo", label: "Inattivo", color: "var(--soft-gray-bg)", bar: "#adb5bd" },
 ] as const;
 
-export function ComplianceChart({ participants }: { participants: Participant[] }) {
+export function ComplianceChart({ participants }: { participants: { compliance: ComplianceLevel }[] }) {
   const counts = LEVELS.map((l) => ({
     ...l,
     count: participants.filter((p) => p.compliance === l.key).length,
